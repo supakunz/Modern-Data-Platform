@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_loan_with_mapping
+  - name: int_feature_engineering
     description: >
       ตาราง intermediate สำหรับ mapping ข้อมูลสัญญา
       กับ reference mapping table เพื่อ enrich year_letter และ feature ต่าง ๆ
@@ -23,7 +23,8 @@ models:
                 severity: error
 
           - dbt_utils.expression_is_true:
-              expression: "estimate_amount > 0"
+              arguments:
+                expression: "> 0"
               config:
                 severity: error
 

@@ -10,7 +10,7 @@ with base as (
         *,
         nullif(trim(cast(product_year as {{ dbt.type_string() }})), '') as product_year_clean,
         upper(trim(cast(year_stamp_holo_dc as {{ dbt.type_string() }}))) as stamp_clean
-    from {{ ref('int_year_chanel_mapping') }}
+    from {{ ref('int_year_stamp_mapping') }}
 
 ),
 

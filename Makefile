@@ -68,7 +68,10 @@ dev-ge-check:
 # ===============================
 # PROD (ระวัง!)
 # ===============================
-.PHONY: prod-up prod-down prod-ps prod-logs
+.PHONY: prod-build prod-up prod-down prod-ps prod-logs
+
+prod-build:
+	GCLOUD_PATH=$(GCLOUD_PATH) docker compose --env-file $(ENV_FILE) -f $(PROD_COMPOSE) build $(PROD_BUILD_SERVICES)
 
 prod-up:
 	GCLOUD_PATH=$(GCLOUD_PATH) docker compose --env-file $(ENV_FILE) -f $(PROD_COMPOSE) build $(PROD_BUILD_SERVICES)

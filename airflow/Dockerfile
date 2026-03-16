@@ -28,5 +28,5 @@ RUN apt-get update && \
 
 USER airflow
 
-COPY Prediction_airflow/requirements-airflow.txt /tmp/requirements-airflow.txt
+COPY requirements-airflow.txt /tmp/requirements-airflow.txt
 RUN pip install --no-cache-dir -r /tmp/requirements-airflow.txt --constraint "${CONSTRAINT_URL}"

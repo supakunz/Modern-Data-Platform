@@ -8,7 +8,7 @@ with base as (
 
     select
         *
-    from {{ ref('int_year_hermes_mapping') }}
+    from {{ ref('int_year_final_mapping') }}
     where estimate_amount is not null
       and estimate_amount > 0
 

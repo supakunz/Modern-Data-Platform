@@ -146,6 +146,21 @@ make dev-dbt-test
 - Silver: staging + intermediate สำหรับ clean/mapping/feature
 - Gold: `gold.mart_contract_pricing` สำหรับใช้งาน downstream
 
+## ตัวอย่างผลลัพธ์ใน BigQuery
+
+ใส่รูป screenshot จาก BigQuery หลังรัน pipeline สำเร็จ (ใช้ข้อมูล synthetic เท่านั้น)
+
+### Bronze Layer (`bronze.contract_records`)
+
+![BigQuery Bronze Result](docs/images/bq_bronze_contract_records.png)
+
+### Gold Layer (`gold.mart_contract_pricing`)
+
+![BigQuery Gold Result](docs/images/bq_gold_mart_contract_pricing.png)
+
+หมายเหตุ:
+- ควรเบลอ/ตัดข้อมูลที่เป็น project id, email, token, หรือ URL สำคัญก่อนอัปโหลด
+
 ## Data Lineage (dbt)
 
 ![dbt Lineage](arch/data_lineage_model_pipeline.png)
