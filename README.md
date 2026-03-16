@@ -11,15 +11,9 @@
 - Docker Compose สำหรับ dev/prod
 - Jupyter Notebook สำหรับวิเคราะห์ข้อมูล
 
-## Planned Architecture
-
-ภาพนี้เป็นแผนที่วางไว้สำหรับ architecture ในอนาคต (ยังไม่ใช่ของที่ใช้งานจริงทั้งหมด)
+## Architecture
 
 ![Planned Pipeline Architecture](arch/DesingArchPipeline.png)
-
-## Current (Local) Architecture
-
-ระบบที่ใช้งานจริงตอนนี้เป็น local-first โดยมี PostgreSQL สำหรับ source/metadata และใช้ BigQuery เฉพาะเมื่อรันโหมด prd
 
 ## Pipeline Flow (สรุป)
 
