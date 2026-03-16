@@ -13,7 +13,7 @@
 
 ## Architecture
 
-![Planned Pipeline Architecture](arch/DesingArchPipeline.png)
+<img width="1012" height="716" alt="Image" src="https://github.com/user-attachments/assets/d80df4da-96b4-4316-aa8d-1bc5ca08df6e" />
 
 ## Pipeline Flow (สรุป)
 
