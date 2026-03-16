@@ -1,0 +1,18 @@
+# API
+fastapi
+uvicorn
+pydantic
+
+# ML
+catboost
+scikit-learn
+
+# Data
+pandas
+numpy
+scipy
+joblib
+
+# Database
+sqlalchemy
+psycopg2-binary

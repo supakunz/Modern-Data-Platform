@@ -1,0 +1,24 @@
+# ML API Requirements
+# Copy this file to: airflow/requirements.txt
+
+# Web Framework
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+
+# Data Validation
+pydantic>=2.0.0
+
+# ML Libraries
+xgboost>=1.7.0
+lightgbm>=4.0.0
+
+# Model Serialization
+joblib>=1.3.0
+
+# User Requested
+pandas>=2.1
+sqlalchemy>=2.0
+psycopg2-binary
+numpy
+pyarrow
+duckdb

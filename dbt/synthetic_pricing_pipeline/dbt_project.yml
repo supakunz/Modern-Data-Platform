@@ -1,0 +1,71 @@
+# -------------------------------
+# ชื่อโปรเจกต์ dbt
+# -------------------------------
+# ชื่อโปรเจกต์ควรเป็นตัวพิมพ์เล็กและใช้ underscore เท่านั้น
+# แนะนำให้ตั้งตามองค์กร หรือวัตถุประสงค์ของ pipeline นี้
+name: 'synthetic_pricing_platform'
+version: '1.0.0'
+
+# -------------------------------
+# โปรไฟล์ที่ dbt ใช้สำหรับเชื่อมต่อฐานข้อมูล
+# -------------------------------
+# ต้องตรงกับชื่อ profile ที่กำหนดไว้ในไฟล์ profiles.yml
+profile: 'synthetic_pricing_platform'
+
+# -------------------------------
+# กำหนด path ของไฟล์ประเภทต่าง ๆ ในโปรเจกต์
+# -------------------------------
+# โดยปกติไม่จำเป็นต้องแก้ไข
+model-paths: ["models"]        # ที่เก็บ dbt models
+analysis-paths: ["analyses"]   # ที่เก็บไฟล์ analysis (ไม่ถูก materialize)
+test-paths: ["tests"]          # ที่เก็บ custom tests
+seed-paths: ["seeds"]          # ที่เก็บไฟล์ seed (CSV)
+macro-paths: ["macros"]        # ที่เก็บ macro
+snapshot-paths: ["snapshots"]  # ที่เก็บ snapshot (SCD / historical data)
+
+# -------------------------------
+# โฟลเดอร์ที่จะถูกลบเมื่อรันคำสั่ง dbt clean
+# -------------------------------
+clean-targets:
+  - "target"        # ไฟล์ build ที่ dbt สร้างขึ้น
+  - "dbt_packages"  # package ภายนอกที่ติดตั้งผ่าน dbt deps
+
+# -------------------------------
+# การกำหนด layer ของ models
+# -------------------------------
+# ใช้โครงสร้าง Bronze → Silver → Gold
+# โดย raw (bronze) จะถูกจัดการนอก dbt
+# dbt จะเริ่มทำงานตั้งแต่ silver เป็นต้นไป
+models:
+  synthetic_pricing_platform:
+
+    # -------------------------------
+    # Staging Layer (Silver)
+    # -------------------------------
+    # ใช้สำหรับทำความสะอาดข้อมูลจาก raw (bronze)
+    # เช่น trim, cast type, standardize ค่า, handle null
+    # ยังไม่มี business logic หรือการ join ข้ามตาราง
+    staging:
+      +schema: silver
+
+    # -------------------------------
+    # Intermediate Layer (Silver)
+    # -------------------------------
+    # ใช้สำหรับ logic ระดับกลาง
+    # เช่น join, mapping, enrichment, การรวมหลายตาราง
+    # เป็นชั้นเตรียมข้อมูลก่อนส่งต่อไป mart
+    intermediate:
+      +schema: silver
+
+    # -------------------------------
+    # Mart Layer (Gold)
+    # -------------------------------
+    # เป็นข้อมูลชั้นสุดท้ายสำหรับใช้งานจริง
+    # รวม business logic, metric และ rule ต่าง ๆ
+    # ใช้กับ BI, Web Application, AI / RAG และระบบ downstream
+    marts:
+      +schema: gold
+
+seeds:
+  synthetic_pricing_platform:
+    +schema: silver

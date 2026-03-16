@@ -1,0 +1,35 @@
+การแยก folder ของ models แยกเป็น 3
+
+1. staging = ทำความสะอาดอย่างเดียว
+    - trim
+    - cast
+    - uppercase
+    - rename column
+
+2. intermediate = รวม logic ซับซ้อน
+    - join
+    - mapping
+    - calculate helper field
+    - enrichment
+
+3. marts = ใช้งานจริง
+    - metric
+    - rule ธุรกิจ
+    - column สำหรับ BI / app
+
+ไฟล์ที่สำคัญใน models
+
+1. sources.yml = ประกาศ Raw Source
+    - ระบุว่าข้อมูลดิบอยุตรงไหน (bronze)
+
+2. schema.yml = อธิบาย + ทดสอบ model
+    - อธิบาย + ตรวจสอบคุณภาพข้อมูล
+
+
+** สรุป mental model จำง่าย ๆ **
+
+- sources.yml = ข้อมูลมาจากไหน (Raw / Bronze)
+- staging     = ทำความสะอาด (Silver)
+- intermediate = รวม logic
+- marts       = ใช้งานจริง (Gold)
+- schema.yml  = อธิบาย + ตรวจสอบคุณภาพข้อมูล

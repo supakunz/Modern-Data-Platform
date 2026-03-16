@@ -1,0 +1,5 @@
+🌱 Seed คืออะไรใน dbt?
+
+Seed = ไฟล์ CSV ที่ dbt เอาไปสร้างเป็น table ใน database ให้อัตโนมัติ
+
+คำสั่ง -> dbt seed

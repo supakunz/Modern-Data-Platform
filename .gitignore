@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Airflow / dbt runtime outputs
+logs/
+dbt/logs/
+dbt/target/
+dbt/dbt_packages/
+
+# Local notebooks checkpoints
+.ipynb_checkpoints/
+
+# Local environment files
+.env
+*.env.local
+
+# Local fallback mount for gcloud credentials
+.gcloud/

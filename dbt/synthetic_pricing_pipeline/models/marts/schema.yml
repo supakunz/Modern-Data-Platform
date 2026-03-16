@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: mart_contract_pricing
+    description: >
+      ข้อมูลสัญญาที่ผ่านการ clean และ feature engineering ที่พร้อมสำหรับการใช้งานในการ train model

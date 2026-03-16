@@ -1,0 +1,130 @@
+x-airflow-common: &airflow-common
+  build:
+    context: ./airflow
+    dockerfile: Dockerfile
+  image: airflow-local:2.8.1-python3.10
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: "Asia/Bangkok"
+    AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: "Asia/Bangkok"
+    AIRFLOW__WEBSERVER__BASE_URL: "http://localhost:8090"
+    PREDICTION_AIRFLOW_DIR: /opt/airflow/Prediction_airflow
+    API_MODE: docker
+    API_CONTAINER_NAME: ml-api
+    PIPELINE_ENV: prd
+    DBT_TARGET: prd
+    BQ_PROJECT_ID: ${BQ_PROJECT_ID}
+    GOOGLE_CLOUD_PROJECT: ${BQ_PROJECT_ID}
+    BQ_DATASET: ${BQ_DATASET:-bronze}
+    BQ_TABLE: ${BQ_TABLE:-contract_records}
+    BQ_LOCATION: ${BQ_LOCATION:-asia-southeast1}
+    BQ_CREDENTIALS_PATH: ${BQ_CREDENTIALS_PATH:-}
+    TZ: "Asia/Bangkok"
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./airflow/Prediction_airflow:/opt/airflow/Prediction_airflow
+    - ./scripts:/opt/airflow/scripts
+    - ./logs:/opt/airflow/logs
+    - ./env:/opt/airflow/env
+    - ${GCLOUD_PATH:-./.gcloud}:/home/airflow/.config/gcloud:ro
+    - ./docker-compose.api.yml:/opt/airflow/docker-compose.api.yml
+    - /var/run/docker.sock:/var/run/docker.sock
+  depends_on:
+    - postgres
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: airflow-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+      - ./data/mock:/mock:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
+  mock-data-loader:
+    image: postgres:15
+    container_name: mock-data-loader
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./database/init:/init:ro
+      - ./data/mock:/mock:ro
+    command:
+      - /bin/bash
+      - -c
+      - |
+        psql postgresql://airflow:airflow@postgres:5432/airflow \
+          -v ON_ERROR_STOP=1 \
+          -f /init/init_mock_data.sql
+    restart: "no"
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow-webserver
+    command: webserver
+    ports:
+      - "8090:8080"
+    depends_on:
+      - airflow-scheduler
+    restart: unless-stopped
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: unless-stopped
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate &&
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com
+
+  dbt:
+    build: .
+    container_name: dbt
+    environment:
+      DBT_TARGET: prd
+      BQ_PROJECT_ID: ${BQ_PROJECT_ID}
+      GOOGLE_CLOUD_PROJECT: ${BQ_PROJECT_ID}
+      BQ_DATASET: ${BQ_DATASET:-bronze}
+      BQ_LOCATION: ${BQ_LOCATION:-asia-southeast1}
+    volumes:
+      - ./dbt:/usr/app
+      - ./dbt/profiles.yml:/root/.dbt/profiles.yml
+      - ${GCLOUD_PATH:-./.gcloud}:/root/.config/gcloud
+    working_dir: /usr/app
+    entrypoint: ["sleep", "infinity"]
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+volumes:
+  postgres-db-volume:

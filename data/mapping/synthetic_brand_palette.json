@@ -1,0 +1,42 @@
+{
+  "AETHERA": {
+    "CARBON": "popular",
+    "PEARL": "popular",
+    "COBALT": "limited"
+  },
+  "NORTHRIDGE": {
+    "SAND": "popular",
+    "DUNE": "popular",
+    "EMBER": "limited"
+  },
+  "ORBITAL ONE": {
+    "GLACIER": "popular",
+    "GRAPHITE": "popular",
+    "TEAL": "unpopular"
+  },
+  "LUMENWORKS": {
+    "MOSS": "popular",
+    "PEARL": "popular",
+    "CARBON": "unpopular"
+  },
+  "TERRABYTE": {
+    "COBALT": "popular",
+    "GRAPHITE": "popular",
+    "EMBER": "unpopular"
+  },
+  "POLARIX": {
+    "GLACIER": "popular",
+    "TEAL": "popular",
+    "SAND": "unpopular"
+  },
+  "VERDANIA": {
+    "MOSS": "popular",
+    "DUNE": "popular",
+    "CARBON": "limited"
+  },
+  "CIRRUS LAB": {
+    "PEARL": "popular",
+    "EMBER": "popular",
+    "COBALT": "unpopular"
+  }
+}

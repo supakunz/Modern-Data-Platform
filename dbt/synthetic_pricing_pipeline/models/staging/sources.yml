@@ -1,0 +1,10 @@
+version: 2
+
+# sources.yml ไฟล์นี้ใช้สําหรับกําหนด source ของข้อมูลที่ ingest มาจากระบบต้นทาง
+sources:
+  - name: bronze
+    schema: "{{ env_var('DBT_SOURCE_SCHEMA', env_var('BQ_DATASET', 'bronze')) }}"
+    description: ข้อมูลดิบ (raw) ที่ ingest มาจากระบบต้นทาง
+    tables:
+      - name: contract_records
+        description: ข้อมูลสัญญาลูกค้าจากระบบหลัก

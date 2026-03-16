@@ -1,0 +1,22 @@
+synthetic_pricing_platform:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_DB_HOST', 'postgres') }}"
+      user: "{{ env_var('DBT_DB_USER', 'airflow') }}"
+      password: "{{ env_var('DBT_DB_PASSWORD', 'airflow') }}"
+      port: "{{ env_var('DBT_DB_PORT', '5432') | int }}"
+      dbname: "{{ env_var('DBT_DB_NAME', 'airflow') }}"
+      schema: bronze
+      threads: 4
+
+    prd:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('BQ_PROJECT_ID', 'your-gcp-project') }}"
+      dataset: "{{ env_var('DBT_BQ_DATASET', env_var('BQ_DATASET', 'bronze')) }}"
+      location: "{{ env_var('BQ_LOCATION', 'asia-southeast1') }}"
+      priority: interactive
+      threads: 4
+      timeout_seconds: 300

@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_contract_records
+    description: ข้อมูลสัญญาที่ผ่านการ clean จาก raw
+
+    columns:
+
+      - name: form_id
+        description : รหัสสัญญา
+        tests:
+          - unique
+
+      - name: brand
+        description : ยี่ห้อ
+        tests:
+          - not_null
+
+      - name: model
+        description : รุ่น
+        tests:
+          - not_null
+
+      - name: sub_model
+        description : รุ่นย่อย
+        tests:
+          - not_null
+
+      - name: condition
+        description : เงื่อนไขความสมบูรณ์ของสินค้า
+        tests:
+          - not_null

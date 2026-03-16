@@ -1,5 +1,3 @@
-version: "3.9"
-
 x-airflow-common: &airflow-common
   build:
     context: ./airflow
@@ -23,7 +21,7 @@ x-airflow-common: &airflow-common
     - ./scripts:/opt/airflow/scripts
     - ./logs:/opt/airflow/logs
     - ./env:/opt/airflow/env
-    - ~/.config/gcloud:/home/airflow/.config/gcloud:ro
+    - ${GCLOUD_PATH:-./.gcloud}:/home/airflow/.config/gcloud:ro
     - /var/run/docker.sock:/var/run/docker.sock
   depends_on:
     - postgres
@@ -38,8 +36,32 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+      - ./data/mock:/mock:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     ports:
       - "5432:5432"
+
+  mock-data-loader:
+    image: postgres:15
+    container_name: mock-data-loader
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./database/init:/init:ro
+      - ./data/mock:/mock:ro
+    command:
+      - /bin/bash
+      - -c
+      - |
+        psql postgresql://airflow:airflow@postgres:5432/airflow \
+          -v ON_ERROR_STOP=1 \
+          -f /init/init_mock_data.sql
+    restart: "no"
 
   airflow-webserver:
     <<: *airflow-common
@@ -78,7 +100,7 @@ services:
     volumes:
       - ./dbt:/usr/app
       - ./dbt/profiles.yml:/root/.dbt/profiles.yml
-      - ~/.config/gcloud:/root/.config/gcloud
+      - ${GCLOUD_PATH:-./.gcloud}:/root/.config/gcloud
     working_dir: /usr/app
     entrypoint: ["sleep", "infinity"]
     ports:
@@ -90,7 +112,7 @@ services:
     container_name: great-expectations
     volumes:
       - ./great_expectations:/great_expectations
-      - ~/.config/gcloud:/root/.config/gcloud
+      - ${GCLOUD_PATH:-./.gcloud}:/root/.config/gcloud
     working_dir: /great_expectations
     entrypoint: ["sleep", "infinity"]
 
@@ -101,8 +123,8 @@ services:
       - "${JUPYTER_PORT:-8888}:8888"
     environment:
       - JUPYTER_ENABLE_LAB=yes
-      - DATABASE_URL=postgresql+psycopg2://datateam:jipjipmoneydata@192.168.1.111:5432/jipjipmoney
-      - DATABASE_WAREHOUSE=postgresql+psycopg2://datateam:jipjipmoneydata@192.168.1.111:5432/jjm_warehouse
+      - DATABASE_URL=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - DATABASE_WAREHOUSE=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     volumes:
       - ./notebooks:/home/jovyan/work
       - ./data:/home/jovyan/data

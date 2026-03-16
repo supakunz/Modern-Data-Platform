@@ -1,0 +1,49 @@
+form_id,column,new_value,old_value
+294,product_year,,
+294,product_year_segment,,
+294,year_letter,Q,Unknown
+350,product_year,,
+350,product_year_segment,,
+350,year_letter,Q,Unknown
+735,product_year,,
+735,product_year_segment,,
+735,year_letter,S,Unknown
+1627,product_year,,
+1627,product_year_segment,,
+1627,year_letter,P,Unknown
+10288,product_year,Unknown,2019
+10288,product_year_segment,,
+10288,year_letter,,
+10299,product_year,Unknown,metal plate
+10299,product_year_segment,not metal plate,metal plate
+10299,year_letter,,
+10314,product_year,Unknown,2010
+10314,product_year_segment,,
+10314,year_letter,,
+10317,product_year,Unknown,2010
+10317,product_year_segment,,
+10317,year_letter,,
+10529,product_year,Unknown,2017
+10529,product_year_segment,,
+10529,year_letter,,
+10632,product_year,Unknown,metal plate
+10632,product_year_segment,not metal plate,metal plate
+10632,year_letter,,
+11034,product_year,Unknown,metal plate
+11034,product_year_segment,not metal plate,metal plate
+11034,year_letter,,
+11050,product_year,Unknown,2020
+11050,product_year_segment,,
+11050,year_letter,,
+11070,product_year,Unknown,metal plate
+11070,product_year_segment,not metal plate,metal plate
+11070,year_letter,,
+11290,product_year,Unknown,metal plate
+11290,product_year_segment,not metal plate,metal plate
+11290,year_letter,,
+11293,product_year,Unknown,metal plate
+11293,product_year_segment,not metal plate,metal plate
+11293,year_letter,,
+11302,product_year,Unknown,2021
+11302,product_year_segment,,
+11302,year_letter,,
