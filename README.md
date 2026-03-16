@@ -150,20 +150,16 @@ make dev-dbt-test
 
 ใส่รูป screenshot จาก BigQuery หลังรัน pipeline สำเร็จ (ใช้ข้อมูล synthetic เท่านั้น)
 
-### Bronze Layer (`bronze.contract_records`)
+### Bronze Silver Gold Layer (`gold.mart_contract_pricing`)
 
-![BigQuery Bronze Result](docs/images/bq_bronze_contract_records.png)
-
-### Gold Layer (`gold.mart_contract_pricing`)
-
-![BigQuery Gold Result](docs/images/bq_gold_mart_contract_pricing.png)
+<img width="1465" height="825" alt="Image" src="https://github.com/user-attachments/assets/9ed59b4c-68b8-4a02-88a6-aa68dab8b0ff" />
 
 หมายเหตุ:
 - ควรเบลอ/ตัดข้อมูลที่เป็น project id, email, token, หรือ URL สำคัญก่อนอัปโหลด
 
 ## Data Lineage (dbt)
 
-![dbt Lineage](arch/data_lineage_model_pipeline.png)
+<img width="1403" height="429" alt="Image" src="https://github.com/user-attachments/assets/15c7470c-0faf-481f-87b6-81c912becb5e" />
 
 โครงสร้างโดยรวม:
 - `stg_contract_records` -> `int_*` -> `mart_contract_pricing`
