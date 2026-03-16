@@ -1,0 +1,115 @@
+version: "3.9"
+
+x-airflow-common: &airflow-common
+  build:
+    context: ./airflow
+    dockerfile: Dockerfile
+  image: airflow-local:2.8.1-python3.10
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: "Asia/Bangkok"
+    AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: "Asia/Bangkok"
+    AIRFLOW__WEBSERVER__BASE_URL: "http://localhost:8080"
+    PREDICTION_AIRFLOW_DIR: /opt/airflow/Prediction_airflow
+    TZ: "Asia/Bangkok"
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./airflow/Prediction_airflow:/opt/airflow/Prediction_airflow
+    - ./scripts:/opt/airflow/scripts
+    - ./logs:/opt/airflow/logs
+    - ./env:/opt/airflow/env
+    - ~/.config/gcloud:/home/airflow/.config/gcloud:ro
+    - /var/run/docker.sock:/var/run/docker.sock
+  depends_on:
+    - postgres
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: airflow-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow-webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+      - "8001:8001"  # ML API port
+    depends_on:
+      - airflow-scheduler
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: scheduler
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate &&
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com
+
+  dbt:
+    build: .
+    container_name: dbt
+    volumes:
+      - ./dbt:/usr/app
+      - ./dbt/profiles.yml:/root/.dbt/profiles.yml
+      - ~/.config/gcloud:/root/.config/gcloud
+    working_dir: /usr/app
+    entrypoint: ["sleep", "infinity"]
+    ports:
+      - "8081:8081"
+
+  great-expectations:
+    image: python:3.10
+    platform: linux/amd64
+    container_name: great-expectations
+    volumes:
+      - ./great_expectations:/great_expectations
+      - ~/.config/gcloud:/root/.config/gcloud
+    working_dir: /great_expectations
+    entrypoint: ["sleep", "infinity"]
+
+  # Jupyter Notebook for development
+  jupyter:
+    build: ./jupyter
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - DATABASE_URL=postgresql+psycopg2://datateam:jipjipmoneydata@192.168.1.111:5432/jipjipmoney
+      - DATABASE_WAREHOUSE=postgresql+psycopg2://datateam:jipjipmoneydata@192.168.1.111:5432/jjm_warehouse
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./data:/home/jovyan/data
+      - ./database:/home/jovyan/database
+    command: start-notebook.sh --NotebookApp.token='${JUPYTER_TOKEN:-}'
+    networks:
+      - default
+
+volumes:
+  postgres-db-volume:
